@@ -1,4 +1,4 @@
-package grup6.security;
+package grup6.chat.security;
 
 import javax.crypto.Cipher;
 import javax.crypto.KeyGenerator;

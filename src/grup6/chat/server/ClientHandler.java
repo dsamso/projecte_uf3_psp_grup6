@@ -1,8 +1,8 @@
-package grup6.server;
+package grup6.chat.server;
 
-import grup6.common.Message;
-import grup6.common.MessageType;
-import grup6.security.EncryptionUtil;
+import grup6.chat.common.Message;
+import grup6.chat.common.MessageType;
+import grup6.chat.security.EncryptionUtil;
 
 import java.io.*;
 import java.net.Socket;
@@ -32,9 +32,9 @@ public class ClientHandler implements Runnable {
                 handleMessage(message);
             }
         } catch (EOFException e) {
-            System.out.println("Client disconnected: " + username);
+            System.out.println("Client desconnectat: " + username);
         } catch (Exception e) {
-            System.err.println("Error handling client message: " + e.getMessage());
+            System.err.println("Error en gestionar el missatge del client: " + e.getMessage());
         } finally {
             cleanup();
         }
@@ -59,9 +59,9 @@ public class ClientHandler implements Runnable {
         if (!server.isUsernameTaken(requestedUsername)) {
             this.username = requestedUsername;
             server.addClient(username, this);
-            sendMessage(new Message(MessageType.CONNECT_ACCEPTED, "Server", username));
+            sendMessage(new Message(MessageType.CONNECT_ACCEPTED, "Servidor", username));
         } else {
-            sendMessage(new Message(MessageType.CONNECT_REJECTED, "Server", "Username already taken"));
+            sendMessage(new Message(MessageType.CONNECT_REJECTED, "Servidor", "El nom d'usuari ja està en ús"));
             cleanup();
         }
     }
@@ -81,7 +81,7 @@ public class ClientHandler implements Runnable {
         try {
             outputStream.writeObject(message);
         } catch (IOException e) {
-            System.err.println("Error sending message to client: " + e.getMessage());
+            System.err.println("Error en enviar el missatge al client: " + e.getMessage());
             cleanup();
         }
     }
@@ -93,7 +93,7 @@ public class ClientHandler implements Runnable {
                 clientSocket.close();
             }
         } catch (IOException e) {
-            System.err.println("Error closing client socket: " + e.getMessage());
+            System.err.println("Error en tancar el socket del client: " + e.getMessage());
         }
     }
 } 

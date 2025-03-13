@@ -1,4 +1,4 @@
-package grup6.common;
+package grup6.chat.common;
 
 import java.io.Serializable;
 

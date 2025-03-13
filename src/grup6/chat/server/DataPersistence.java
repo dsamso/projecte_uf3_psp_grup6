@@ -1,7 +1,7 @@
-package grup6.server;
+package grup6.chat.server;
 
-import grup6.common.Message;
-import grup6.common.User;
+import grup6.chat.common.Message;
+import grup6.chat.common.User;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -9,8 +9,8 @@ import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class DataPersistence {
-    private static final String USERS_FILE = "users.dat";
-    private static final String MESSAGES_FILE = "messages.dat";
+    private static final String USERS_FILE = "usuaris.dat";
+    private static final String MESSAGES_FILE = "missatges.dat";
     private final ConcurrentHashMap<String, User> users;
 
     public DataPersistence() {
@@ -31,7 +31,7 @@ public class DataPersistence {
                 List<User> loadedUsers = (List<User>) ois.readObject();
                 loadedUsers.forEach(user -> users.put(user.getUsername(), user));
             } catch (Exception e) {
-                System.err.println("Error loading users: " + e.getMessage());
+                System.err.println("Error en carregar els usuaris: " + e.getMessage());
             }
         }
     }
@@ -42,9 +42,9 @@ public class DataPersistence {
             try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(file))) {
                 @SuppressWarnings("unchecked")
                 List<Message> messages = (List<Message>) ois.readObject();
-                // Messages are loaded but not stored in memory to prevent memory issues
+                // Els missatges es carreguen però no es guarden a la memòria per evitar problemes de memòria
             } catch (Exception e) {
-                System.err.println("Error loading messages: " + e.getMessage());
+                System.err.println("Error en carregar els missatges: " + e.getMessage());
             }
         }
     }
@@ -64,7 +64,7 @@ public class DataPersistence {
                 List<Message> existingMessages = (List<Message>) ois.readObject();
                 messages.addAll(existingMessages);
             } catch (Exception e) {
-                System.err.println("Error reading existing messages: " + e.getMessage());
+                System.err.println("Error en llegir els missatges existents: " + e.getMessage());
             }
         }
 
@@ -72,7 +72,7 @@ public class DataPersistence {
         try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(file))) {
             oos.writeObject(messages);
         } catch (Exception e) {
-            System.err.println("Error saving message: " + e.getMessage());
+            System.err.println("Error en desar el missatge: " + e.getMessage());
         }
     }
 
@@ -80,7 +80,7 @@ public class DataPersistence {
         try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(USERS_FILE))) {
             oos.writeObject(new ArrayList<>(users.values()));
         } catch (Exception e) {
-            System.err.println("Error saving users: " + e.getMessage());
+            System.err.println("Error en desar els usuaris: " + e.getMessage());
         }
     }
 
