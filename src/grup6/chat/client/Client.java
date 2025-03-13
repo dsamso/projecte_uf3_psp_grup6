@@ -1,4 +1,4 @@
-package java.grup6.client;
+package grup6.chat.client;
 
 import java.io.*;
 import java.net.*;

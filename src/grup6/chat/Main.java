@@ -1,7 +1,7 @@
-package java.grup6;
+package grup6.chat;
 
-import java.grup6.server.Server;
-import java.grup6.client.Client;
+import grup6.chat.server.Server;
+import grup6.chat.client.Client;
 
 public class Main {
     public static void main(String[] args) {
