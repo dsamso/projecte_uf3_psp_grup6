@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<BorderPane xmlns:fx="http://javafx.com/fxml" fx:controller="grup6.client.ChatWindowController">
+    <padding>
+        <Insets top="10" right="10" bottom="10" left="10"/>
+    </padding>
+    
+    <!-- Panel izquierdo - Lista de usuarios -->
+    <left>
+        <VBox spacing="10" style="-fx-background-color: #F0F0F0; -fx-padding: 10;">
+            <Label text="Usuarios" style="-fx-font-weight: bold;"/>
+            <ListView fx:id="userListView" VBox.vgrow="ALWAYS"/>
+            <Button text="Limpiar Chat" fx:id="clearButton" 
+                    style="-fx-background-color: #4682B4; -fx-text-fill: white;"/>
+        </VBox>
+    </left>
+    
+    <!-- Panel central - Chat -->
+    <center>
+        <VBox spacing="10" fx:id="mainContainer">
+            <TextArea fx:id="chatArea" VBox.vgrow="ALWAYS" editable="false" wrapText="true"/>
+            
+            <VBox spacing="5">
+                <TextField fx:id="recipientField" promptText="Destinatario (dejar vacío para chat general)"/>
+                <HBox spacing="10">
+                    <TextField fx:id="messageField" HBox.hgrow="ALWAYS"/>
+                    <Button text="Archivo" fx:id="fileButton"
+                            style="-fx-background-color: #4682B4; -fx-text-fill: white;"/>
+                    <Button text="Enviar" fx:id="sendButton"
+                            style="-fx-background-color: #4682B4; -fx-text-fill: white;"/>
+                </HBox>
+            </VBox>
+        </VBox>
+    </center>
+    
+    <!-- Barra de estado -->
+    <bottom>
+        <Label fx:id="statusLabel" text="Conectando..." style="-fx-padding: 5;"/>
+    </bottom>
+</BorderPane> 

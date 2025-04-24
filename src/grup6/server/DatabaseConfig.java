@@ -14,12 +14,12 @@ public class DatabaseConfig {
         try {
             // Cargar el driver de SQLite
             Class.forName("org.sqlite.JDBC");
-            System.out.println("Driver SQLite cargado correctamente");
+            Logger.log("Driver SQLite cargado correctamente");
             initDatabase();
         } catch (SQLException e) {
-            System.err.println("Error inicializando la base de datos: " + e.getMessage());
+            Logger.error("Error inicializando la base de datos", e);
         } catch (ClassNotFoundException e) {
-            System.err.println("Error: No se encontró el driver de SQLite");
+            Logger.error("Error: No se encontró el driver de SQLite", e);
         }
     }
 
@@ -29,19 +29,20 @@ public class DatabaseConfig {
 
     private static void initDatabase() throws SQLException {
         try (Connection conn = getConnection()) {
-            System.out.println("Conexión a la base de datos establecida correctamente");
+            Logger.log("Conexión a la base de datos establecida correctamente");
             
-            // Crear tabla de usuarios si no existe
+            // Crear tabla de usuarios
             String createUsersTable = 
                 "CREATE TABLE IF NOT EXISTS usuarios (" +
                 "    id INTEGER PRIMARY KEY AUTOINCREMENT," +
                 "    username TEXT UNIQUE NOT NULL," +
-                "    password TEXT NOT NULL," +
+                "    password_hash TEXT NOT NULL," +
+                "    salt TEXT NOT NULL," +
                 "    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP," +
                 "    is_admin BOOLEAN DEFAULT 0" +
                 ")";
 
-            // Crear tabla de mensajes si no existe
+            // Crear tabla de mensajes privados
             String createMessagesTable = 
                 "CREATE TABLE IF NOT EXISTS mensajes (" +
                 "    id INTEGER PRIMARY KEY AUTOINCREMENT," +
@@ -49,26 +50,38 @@ public class DatabaseConfig {
                 "    recipient TEXT NOT NULL," +
                 "    message TEXT NOT NULL," +
                 "    timestamp DATETIME DEFAULT CURRENT_TIMESTAMP," +
-                "    is_read BOOLEAN DEFAULT 0," +
-                "    FOREIGN KEY (sender) REFERENCES usuarios(username)," +
-                "    FOREIGN KEY (recipient) REFERENCES usuarios(username)" +
+                "    is_read BOOLEAN DEFAULT 0" +
                 ")";
 
-            // Crear tabla de mensajes generales si no existe
+            // Crear tabla de mensajes generales
             String createGeneralMessagesTable = 
                 "CREATE TABLE IF NOT EXISTS mensajes_generales (" +
                 "    id INTEGER PRIMARY KEY AUTOINCREMENT," +
                 "    sender TEXT NOT NULL," +
                 "    message TEXT NOT NULL," +
-                "    timestamp DATETIME DEFAULT CURRENT_TIMESTAMP," +
-                "    FOREIGN KEY (sender) REFERENCES usuarios(username)" +
+                "    timestamp DATETIME DEFAULT CURRENT_TIMESTAMP" +
+                ")";
+
+            // Crear tabla de archivos
+            String createFilesTable = 
+                "CREATE TABLE IF NOT EXISTS archivos (" +
+                "    id TEXT PRIMARY KEY," +
+                "    filename TEXT NOT NULL," +
+                "    sender TEXT NOT NULL," +
+                "    recipient TEXT NOT NULL," +
+                "    file_path TEXT NOT NULL," +
+                "    file_size INTEGER NOT NULL," +
+                "    upload_date DATETIME DEFAULT CURRENT_TIMESTAMP," +
+                "    FOREIGN KEY (sender) REFERENCES usuarios(username)," +
+                "    FOREIGN KEY (recipient) REFERENCES usuarios(username)" +
                 ")";
 
             try (Statement stmt = conn.createStatement()) {
                 stmt.execute(createUsersTable);
                 stmt.execute(createMessagesTable);
                 stmt.execute(createGeneralMessagesTable);
-                System.out.println("Tablas 'usuarios', 'mensajes' y 'mensajes_generales' creadas o verificadas correctamente");
+                stmt.execute(createFilesTable);
+                Logger.log("Tablas creadas o verificadas correctamente");
             }
 
             // Verificar si existe el usuario admin
@@ -77,9 +90,16 @@ public class DatabaseConfig {
                  ResultSet rs = stmt.executeQuery(checkAdmin)) {
                 if (rs.next() && rs.getInt(1) == 0) {
                     // Crear usuario admin si no existe
-                    String createAdmin = "INSERT INTO usuarios (username, password, is_admin) VALUES ('admin', 'admin123', 1)";
-                    stmt.execute(createAdmin);
-                    System.out.println("Usuario admin creado con contraseña: admin123");
+                    String salt = UserManager.generateSalt();
+                    String hashedPassword = UserManager.hashPassword("admin123", salt);
+                    String createAdmin = "INSERT INTO usuarios (username, password_hash, salt, is_admin) VALUES (?, ?, ?, 1)";
+                    try (PreparedStatement pstmt = conn.prepareStatement(createAdmin)) {
+                        pstmt.setString(1, "admin");
+                        pstmt.setString(2, hashedPassword);
+                        pstmt.setString(3, salt);
+                        pstmt.executeUpdate();
+                        Logger.log("Usuario admin creado con contraseña: admin123");
+                    }
                 }
             }
         }

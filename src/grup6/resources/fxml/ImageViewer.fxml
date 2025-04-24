@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="grup6.client.ImageViewerController"
+      prefHeight="600.0" prefWidth="800.0"
+      spacing="10.0"
+      style="-fx-padding: 10;">
+
+    <HBox alignment="CENTER_RIGHT" spacing="5.0">
+        <Button fx:id="closeButton" text="Cerrar" onAction="#handleClose"/>
+    </HBox>
+
+    <ScrollPane fitToWidth="true" fitToHeight="true">
+        <ImageView fx:id="imageView" 
+                  preserveRatio="true"
+                  smooth="true"/>
+    </ScrollPane>
+
+    <Label fx:id="imageInfoLabel" 
+           style="-fx-font-size: 12px; -fx-text-fill: #666;"/>
+</VBox> 
